@@ -4,9 +4,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root 
-      MYSQL_DATABASE: database
-      MYSQL_USER: batata
-      MYSQL_PASSWORD: batata
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
     ports:
       - "3306:3306"
     volumes:

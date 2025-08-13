@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Backend.Server.DTOs;
+namespace Backend.Server.Routes.Contact;
 
 public class CreateContactDto
 {

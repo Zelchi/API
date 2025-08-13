@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Backend.Server.DTOs;
 
 namespace Backend.Server.Routes.Contact;
 

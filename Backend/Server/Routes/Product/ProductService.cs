@@ -1,5 +1,4 @@
 using Backend.Server.Config;
-using Backend.Server.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Server.Routes.Product;

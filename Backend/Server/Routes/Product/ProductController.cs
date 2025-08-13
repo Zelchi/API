@@ -4,31 +4,52 @@ namespace Backend.Server.Routes.Product;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class ProductController : ControllerBase
+public class ProductController(ProductService productService) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult GetAllProducts()
-    {
-        var products = new[]
-        {
-            new { Id = 1, Name = "Notebook", Price = 2500.00 },
-            new { Id = 2, Name = "Mouse", Price = 50.00 },
-            new { Id = 3, Name = "Teclado", Price = 150.00 }
-        };
+    private readonly ProductService ProductService = productService;
 
+    [HttpGet]
+    public async Task<IActionResult> GetAllProducts()
+    {
+        var products = await ProductService.GetAllProductsAsync();
         return Ok(products);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetProductById(int id)
+    public async Task<IActionResult> GetProductById(int id)
     {
-        var product = new { Id = id, Name = $"Produto {id}", Price = 100.00 * id };
+        var product = await ProductService.GetProductByIdAsync(id);
         return Ok(product);
     }
 
     [HttpPost]
-    public IActionResult CreateProduct([FromBody] object product)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto createProductDto)
     {
-        return Ok(new { message = "Produto criado com sucesso!", product });
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var product = await ProductService.CreateProductAsync(createProductDto);
+        return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDto updateProductDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var product = await ProductService.UpdateProductAsync(id, updateProductDto);
+        return Ok(product);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var deleted = await ProductService.DeleteProductAsync(id);
+        
+        if (!deleted)
+            return NotFound(new { message = "Produto não encontrado" });
+
+        return Ok(new { message = "Produto removido com sucesso" });
     }
 }

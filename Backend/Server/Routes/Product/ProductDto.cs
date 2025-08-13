@@ -1,0 +1,42 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Backend.Server.Routes.Product;
+
+public class CreateProductDto
+{
+    [Required(ErrorMessage = "Nome é obrigatório")]
+    [StringLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres")]
+    public string Name { get; set; } = string.Empty;
+    
+    [Required(ErrorMessage = "Preço é obrigatório")]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
+    public decimal Price { get; set; }
+    
+    [StringLength(500, ErrorMessage = "Descrição deve ter no máximo 500 caracteres")]
+    public string Description { get; set; } = string.Empty;
+}
+
+public class UpdateProductDto
+{
+    [StringLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres")]
+    public string Name { get; set; } = string.Empty;
+    
+    [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
+    public decimal? Price { get; set; }
+    
+    [StringLength(500, ErrorMessage = "Descrição deve ter no máximo 500 caracteres")]
+    public string Description { get; set; } = string.Empty;
+    
+    public bool? Active { get; set; }
+}
+
+public class ProductDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public bool Active { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}

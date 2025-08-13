@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using DataShared.Entities;
 
-namespace DataShared;
+namespace Backend.Server.Config;
 
 public class Database(DbContextOptions<Database> options) : DbContext(options)
 {
-    // DbSets para as entidades
-    public DbSet<Contact> Contacts { get; set; }
+    public DbSet<Routes.Contact.ContactEntity> Contacts { get; set; }
+    public DbSet<Routes.Product.ProductEntity> Products { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

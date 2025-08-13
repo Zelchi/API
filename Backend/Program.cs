@@ -1,0 +1,1 @@
+var app = Backend.Server.Config.Startup.CreateApplication(); app.Run();

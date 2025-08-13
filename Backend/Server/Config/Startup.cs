@@ -5,7 +5,7 @@ public static class Startup
     public static WebApplication CreateApplication()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddServices(builder.Configuration);
+        builder.Services.AddServices();
         var app = builder.Build();
         return app.ConfigurePipeline();
     }

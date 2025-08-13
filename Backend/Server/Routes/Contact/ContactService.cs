@@ -8,11 +8,11 @@ public class ContactService(Database context)
 {
     private readonly Database Context = context;
 
-    public async Task<IEnumerable<ContactDto>> GetAllContactsAsync()
+    public async Task<IEnumerable<ContactEntity>> GetAllContactsAsync()
     {
         var contacts = await Context.Contacts
             .Where(c => c.Active)
-            .Select(c => new ContactDto
+            .Select(c => new ContactEntity
             {
                 Id = c.Id,
                 Name = c.Name,

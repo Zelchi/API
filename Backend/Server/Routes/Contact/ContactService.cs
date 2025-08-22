@@ -1,5 +1,6 @@
-using Backend.Server.Config;
 using Microsoft.EntityFrameworkCore;
+using Backend.Server.Config;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Backend.Server.Routes.Contact;
 
@@ -10,14 +11,14 @@ public class ContactService(Database context)
     public async Task<IEnumerable<ContactEntity>> GetAllContactsAsync()
     {
         var contacts = await Context.Contacts
-            .Where(c => c.Active)
+            .Where(c => c.DeletedAt == DateTime.MinValue)
             .Select(c => new ContactEntity
             {
                 Id = c.Id,
                 Name = c.Name,
                 Phone = c.Phone,
                 Email = c.Email,
-                Active = c.Active,
+                DeletedAt = c.DeletedAt,
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             })
@@ -29,14 +30,14 @@ public class ContactService(Database context)
     public async Task<ContactEntity> GetContactByIdAsync(int id)
     {
         var contact = await Context.Contacts
-            .Where(c => c.Id == id && c.Active)
+            .Where(c => c.DeletedAt == DateTime.MinValue)
             .Select(c => new ContactEntity
             {
                 Id = c.Id,
                 Name = c.Name,
                 Phone = c.Phone,
                 Email = c.Email,
-                Active = c.Active,
+                DeletedAt = c.DeletedAt,
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             })
@@ -55,7 +56,7 @@ public class ContactService(Database context)
             Name = createContactDto.Name,
             Phone = createContactDto.Phone,
             Email = createContactDto.Email,
-            Active = true,
+            DeletedAt = DateTime.MinValue,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -69,7 +70,7 @@ public class ContactService(Database context)
             Name = contact.Name,
             Phone = contact.Phone,
             Email = contact.Email,
-            Active = contact.Active,
+            DeletedAt = contact.DeletedAt,
             CreatedAt = contact.CreatedAt,
             UpdatedAt = contact.UpdatedAt
         };
@@ -77,23 +78,12 @@ public class ContactService(Database context)
 
     public async Task<ContactEntity> UpdateContactAsync(int id, UpdateContactDto updateContactDto)
     {
-        var contact = await Context.Contacts
-            .FirstOrDefaultAsync(c => c.Id == id && c.Active);
-
-        if (contact == null)
+        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue) ??
             throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
 
-        if (!string.IsNullOrEmpty(updateContactDto.Name))
-            contact.Name = updateContactDto.Name;
-        
-        if (!string.IsNullOrEmpty(updateContactDto.Phone))
-            contact.Phone = updateContactDto.Phone;
-        
-        if (!string.IsNullOrEmpty(updateContactDto.Email))
-            contact.Email = updateContactDto.Email;
-        
-        if (updateContactDto.Active.HasValue)
-            contact.Active = updateContactDto.Active.Value;
+        if (!string.IsNullOrEmpty(updateContactDto.Name)) contact.Name = updateContactDto.Name;
+        if (!string.IsNullOrEmpty(updateContactDto.Phone)) contact.Phone = updateContactDto.Phone;
+        if (!string.IsNullOrEmpty(updateContactDto.Email)) contact.Email = updateContactDto.Email;
 
         contact.UpdatedAt = DateTime.UtcNow;
 
@@ -105,7 +95,7 @@ public class ContactService(Database context)
             Name = contact.Name,
             Phone = contact.Phone,
             Email = contact.Email,
-            Active = contact.Active,
+            DeletedAt = contact.DeletedAt,
             CreatedAt = contact.CreatedAt,
             UpdatedAt = contact.UpdatedAt
         };
@@ -113,16 +103,15 @@ public class ContactService(Database context)
 
     public async Task<bool> DeleteContactAsync(int id)
     {
-        var contact = await Context.Contacts
-            .FirstOrDefaultAsync(c => c.Id == id && c.Active);
+        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue);
 
-        if (contact == null)
-            return false;
+        if (contact == null) return false;
 
-        contact.Active = false;
+        contact.DeletedAt = DateTime.UtcNow;
         contact.UpdatedAt = DateTime.UtcNow;
 
         await Context.SaveChangesAsync();
+
         return true;
     }
 }

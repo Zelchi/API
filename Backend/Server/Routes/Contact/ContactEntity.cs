@@ -21,9 +21,10 @@ public class ContactEntity
     [StringLength(255)]
     public string Email { get; set; } = string.Empty;
 
+    [StringLength(30)]
     public string Role { get; set; } = string.Empty;
 
-    public bool Active { get; set; } = true;
+    public DateTime DeletedAt { get; set; } = DateTime.MinValue;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }
 }

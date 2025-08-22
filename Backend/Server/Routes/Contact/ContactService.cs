@@ -26,11 +26,11 @@ public class ContactService(Database context)
         return contacts;
     }
 
-    public async Task<ContactDto> GetContactByIdAsync(int id)
+    public async Task<ContactEntity> GetContactByIdAsync(int id)
     {
         var contact = await Context.Contacts
             .Where(c => c.Id == id && c.Active)
-            .Select(c => new ContactDto
+            .Select(c => new ContactEntity
             {
                 Id = c.Id,
                 Name = c.Name,
@@ -48,7 +48,7 @@ public class ContactService(Database context)
         return contact;
     }
 
-    public async Task<ContactDto> CreateContactAsync(CreateContactDto createContactDto)
+    public async Task<ContactEntity> CreateContactAsync(CreateContactDto createContactDto)
     {
         var contact = new ContactEntity
         {
@@ -63,7 +63,7 @@ public class ContactService(Database context)
         Context.Contacts.Add(contact);
         await Context.SaveChangesAsync();
 
-        return new ContactDto
+        return new ContactEntity
         {
             Id = contact.Id,
             Name = contact.Name,
@@ -75,7 +75,7 @@ public class ContactService(Database context)
         };
     }
 
-    public async Task<ContactDto> UpdateContactAsync(int id, UpdateContactDto updateContactDto)
+    public async Task<ContactEntity> UpdateContactAsync(int id, UpdateContactDto updateContactDto)
     {
         var contact = await Context.Contacts
             .FirstOrDefaultAsync(c => c.Id == id && c.Active);
@@ -99,7 +99,7 @@ public class ContactService(Database context)
 
         await Context.SaveChangesAsync();
 
-        return new ContactDto
+        return new ContactEntity
         {
             Id = contact.Id,
             Name = contact.Name,

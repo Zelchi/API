@@ -7,11 +7,11 @@ public class ProductService(Database context)
 {
     private readonly Database Context = context;
 
-    public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+    public async Task<IEnumerable<ProductEntity>> GetAllProductsAsync()
     {
         var products = await Context.Products
             .Where(p => p.Active)
-            .Select(p => new ProductDto
+            .Select(p => new ProductEntity
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -26,11 +26,11 @@ public class ProductService(Database context)
         return products;
     }
 
-    public async Task<ProductDto> GetProductByIdAsync(int id)
+    public async Task<ProductEntity> GetProductByIdAsync(int id)
     {
         var product = await Context.Products
             .Where(p => p.Id == id && p.Active)
-            .Select(p => new ProductDto
+            .Select(p => new ProductEntity
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -44,7 +44,7 @@ public class ProductService(Database context)
         return product;
     }
 
-    public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
+    public async Task<ProductEntity> CreateProductAsync(CreateProductDto createProductDto)
     {
         ProductEntity product = new()
         {
@@ -59,7 +59,7 @@ public class ProductService(Database context)
         Context.Products.Add(product);
         await Context.SaveChangesAsync();
 
-        return new ProductDto
+        return new ProductEntity
         {
             Id = product.Id,
             Name = product.Name,
@@ -71,7 +71,7 @@ public class ProductService(Database context)
         };
     }
 
-    public async Task<ProductDto> UpdateProductAsync(int id, UpdateProductDto updateProductDto)
+    public async Task<ProductEntity> UpdateProductAsync(int id, UpdateProductDto updateProductDto)
     {
         var product = await Context.Products
             .FirstOrDefaultAsync(p => p.Id == id && p.Active);
@@ -95,7 +95,7 @@ public class ProductService(Database context)
 
         await Context.SaveChangesAsync();
 
-        return new ProductDto
+        return new ProductEntity
         {
             Id = product.Id,
             Name = product.Name,

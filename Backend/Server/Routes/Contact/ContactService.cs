@@ -41,10 +41,7 @@ public class ContactService(Database context)
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             })
-            .FirstOrDefaultAsync();
-
-        if (contact == null)
-            throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
+            .FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
 
         return contact;
     }

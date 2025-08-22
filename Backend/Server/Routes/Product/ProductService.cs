@@ -41,6 +41,7 @@ public class ProductService(Database context)
                 UpdatedAt = p.UpdatedAt
             })
             .FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
+            
         return product;
     }
 

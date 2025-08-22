@@ -12,4 +12,10 @@ public class Database(DbContextOptions<Database> options, IConfiguration configu
         if (options.IsConfigured) return;
         options.UseMySQL(configuration.GetConnectionString("DefaultConnection"));
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+
 }

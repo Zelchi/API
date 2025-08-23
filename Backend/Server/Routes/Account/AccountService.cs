@@ -38,7 +38,7 @@ public class AccountService(Database Context)
                 CreatedAt = a.CreatedAt,
                 UpdatedAt = a.UpdatedAt
             })
-            .FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Conta com ID {id} não encontrada");
+            .FirstOrDefaultAsync() ?? throw new Exception($"Conta com ID {id} não encontrada");
 
         return account;
     }
@@ -66,7 +66,7 @@ public class AccountService(Database Context)
     {
         var account = await Context.Accounts
             .FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue)
-            ?? throw new KeyNotFoundException($"Conta com ID {id} não encontrada");
+            ?? throw new Exception($"Conta com ID {id} não encontrada");
 
         account.Username = updateAccountDto.Username ?? account.Username;
         account.Email = updateAccountDto.Email ?? account.Email;
@@ -83,7 +83,7 @@ public class AccountService(Database Context)
     public async Task Delete(int id)
     {
         var account = await Context.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue)
-        ?? throw new KeyNotFoundException($"Conta com ID {id} não encontrada");
+        ?? throw new Exception($"Conta com ID {id} não encontrada");
 
         account.DeletedAt = DateTime.UtcNow;
         account.UpdatedAt = DateTime.UtcNow;

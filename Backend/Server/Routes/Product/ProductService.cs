@@ -38,7 +38,7 @@ public class ProductService(Database Context)
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt
             })
-            .FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
+            .FirstOrDefaultAsync() ?? throw new Exception($"Produto com ID {id} não encontrado");
             
         return product;
     }
@@ -73,7 +73,7 @@ public class ProductService(Database Context)
     public async Task<ProductEntity> Update(int id, UpdateProductDto updateProductDto)
     {
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue) ??
-            throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
+            throw new Exception($"Produto com ID {id} não encontrado");
 
         if (!string.IsNullOrEmpty(updateProductDto.Name))
             product.Name = updateProductDto.Name;

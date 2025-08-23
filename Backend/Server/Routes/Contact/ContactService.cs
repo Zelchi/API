@@ -38,7 +38,7 @@ public class ContactService(Database Context)
                 CreatedAt = c.CreatedAt,
                 UpdatedAt = c.UpdatedAt
             })
-            .FirstOrDefaultAsync() ?? throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
+            .FirstOrDefaultAsync() ?? throw new Exception($"Contato com ID {id} não encontrado");
 
         return contact;
     }
@@ -73,7 +73,7 @@ public class ContactService(Database Context)
     public async Task<ContactEntity> Update(int id, UpdateContactDto updateContactDto)
     {
         var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue) ??
-            throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
+            throw new Exception($"Contato com ID {id} não encontrado");
 
         if (!string.IsNullOrEmpty(updateContactDto.Name)) contact.Name = updateContactDto.Name;
         if (!string.IsNullOrEmpty(updateContactDto.Phone)) contact.Phone = updateContactDto.Phone;
@@ -98,7 +98,7 @@ public class ContactService(Database Context)
     public async Task Delete(int id)
     {
         var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue)
-        ?? throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
+        ?? throw new Exception($"Contato com ID {id} não encontrado");
 
         contact.DeletedAt = DateTime.UtcNow;
         contact.UpdatedAt = DateTime.UtcNow;

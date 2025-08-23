@@ -45,11 +45,14 @@ public class ContactController(ContactService contactService) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContact(int id)
     {
-        var deleted = await ContactService.Delete(id);
-
-        if (!deleted)
-            return NotFound(new { message = "Contato não encontrado" });
-
-        return Ok(new { message = "Contato removido com sucesso" });
+        try
+        {
+            await ContactService.Delete(id);
+            return Ok(new { message = "Contato removido com sucesso" });
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 }

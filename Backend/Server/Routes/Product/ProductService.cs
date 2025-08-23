@@ -5,7 +5,7 @@ namespace Backend.Server.Routes.Product;
 
 public class ProductService(Database Context)
 {
-    public async Task<IEnumerable<ProductEntity>> GetAllProducts()
+    public async Task<IEnumerable<ProductEntity>> GetAll()
     {
         var products = await Context.Products
             .Where(p => p.DeletedAt == DateTime.MinValue)
@@ -24,7 +24,7 @@ public class ProductService(Database Context)
         return products;
     }
 
-    public async Task<ProductEntity> GetProductById(int id)
+    public async Task<ProductEntity> GetById(int id)
     {
         var product = await Context.Products
             .Where(p => p.Id == id && p.DeletedAt == DateTime.MinValue)
@@ -43,7 +43,7 @@ public class ProductService(Database Context)
         return product;
     }
 
-    public async Task<ProductEntity> CreateProduct(CreateProductDto createProductDto)
+    public async Task<ProductEntity> Create(CreateProductDto createProductDto)
     {
         ProductEntity product = new()
         {
@@ -70,7 +70,7 @@ public class ProductService(Database Context)
         };
     }
 
-    public async Task<ProductEntity> UpdateProduct(int id, UpdateProductDto updateProductDto)
+    public async Task<ProductEntity> Update(int id, UpdateProductDto updateProductDto)
     {
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue) ??
             throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
@@ -102,7 +102,7 @@ public class ProductService(Database Context)
         };
     }
 
-    public async Task<bool> DeleteProduct(int id)
+    public async Task<bool> Delete(int id)
     {
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue);
 

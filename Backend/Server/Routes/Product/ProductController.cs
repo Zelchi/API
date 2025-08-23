@@ -11,14 +11,14 @@ public class ProductController(ProductService productService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllProducts()
     {
-        var products = await ProductService.GetAllProducts();
+        var products = await ProductService.GetAll();
         return Ok(products);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(int id)
     {
-        var product = await ProductService.GetProductById(id);
+        var product = await ProductService.GetById(id);
         return Ok(product);
     }
 
@@ -28,7 +28,7 @@ public class ProductController(ProductService productService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var product = await ProductService.CreateProduct(createProductDto);
+        var product = await ProductService.Create(createProductDto);
         return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
     }
 
@@ -38,14 +38,14 @@ public class ProductController(ProductService productService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var product = await ProductService.UpdateProduct(id, updateProductDto);
+        var product = await ProductService.Update(id, updateProductDto);
         return Ok(product);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-        var deleted = await ProductService.DeleteProduct(id);
+        var deleted = await ProductService.Delete(id);
         
         if (!deleted)
             return NotFound(new { message = "Produto não encontrado" });

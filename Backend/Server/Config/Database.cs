@@ -4,6 +4,7 @@ namespace Backend.Server.Config;
 
 public class Database(DbContextOptions<Database> options, IConfiguration configuration) : DbContext(options)
 {
+    public DbSet<Routes.Account.AccountEntity> Accounts { get; set; }
     public DbSet<Routes.Contact.ContactEntity> Contacts { get; set; }
     public DbSet<Routes.Product.ProductEntity> Products { get; set; }
 
@@ -17,5 +18,4 @@ public class Database(DbContextOptions<Database> options, IConfiguration configu
     {
         base.OnModelCreating(modelBuilder);
     }
-
 }

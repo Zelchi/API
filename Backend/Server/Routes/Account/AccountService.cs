@@ -49,7 +49,6 @@ public class AccountService(Database Context, IConfiguration Configuration)
 
     public async Task<AccountEntity> Create(CreateAccountDto createAccountDto)
     {
-        // Verificar se email já existe
         var existingAccount = await Context.Accounts
             .FirstOrDefaultAsync(a => a.Email == createAccountDto.Email && a.DeletedAt == DateTime.MinValue);
         

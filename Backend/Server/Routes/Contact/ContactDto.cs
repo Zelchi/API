@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.Server.Routes.Contact;
 
-public class CreateContactDto
+public record CreateContactDto
 {
     [Required(ErrorMessage = "Nome é obrigatório")]
     [StringLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres")]
@@ -17,7 +17,7 @@ public class CreateContactDto
     public string Email { get; set; } = string.Empty;
 }
 
-public class UpdateContactDto
+public record UpdateContactDto
 {
     [StringLength(100, ErrorMessage = "Nome deve ter no máximo 100 caracteres")]
     public string Name { get; set; } = string.Empty;
@@ -28,6 +28,4 @@ public class UpdateContactDto
     [EmailAddress(ErrorMessage = "Email deve ter um formato válido")]
     [StringLength(150, ErrorMessage = "Email deve ter no máximo 150 caracteres")]
     public string Email { get; set; } = string.Empty;
-    
-    public bool? Active { get; set; }
 }

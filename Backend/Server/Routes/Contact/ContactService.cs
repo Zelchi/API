@@ -95,17 +95,14 @@ public class ContactService(Database Context)
         };
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task Delete(int id)
     {
-        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue);
-
-        if (contact == null) return false;
+        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue)
+        ?? throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
 
         contact.DeletedAt = DateTime.UtcNow;
         contact.UpdatedAt = DateTime.UtcNow;
 
         await Context.SaveChangesAsync();
-
-        return true;
     }
 }

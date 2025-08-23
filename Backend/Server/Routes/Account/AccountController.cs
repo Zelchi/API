@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Server.Routes.Account;
@@ -6,7 +7,27 @@ namespace Backend.Server.Routes.Account;
 [Route("api/v1/[controller]")]
 public class AccountController(AccountService AccountService) : ControllerBase
 {
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var response = await AccountService.Login(loginDto);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
+
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllAccounts()
     {
         try
@@ -21,6 +42,7 @@ public class AccountController(AccountService AccountService) : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetAccountById(int id)
     {
         try
@@ -42,11 +64,19 @@ public class AccountController(AccountService AccountService) : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var account = await AccountService.Create(createAccountDto);
-        return CreatedAtAction(nameof(GetAccountById), new { id = account.Id }, account);
+        try
+        {
+            var account = await AccountService.Create(createAccountDto);
+            return CreatedAtAction(nameof(GetAccountById), new { id = account.Id }, account);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountDto updateAccountDto)
     {
         if (!ModelState.IsValid)
@@ -66,6 +96,7 @@ public class AccountController(AccountService AccountService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteAccount(int id)
     {
         try

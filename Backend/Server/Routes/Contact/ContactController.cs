@@ -1,23 +1,52 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Server.Routes.Contact;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Authorize]
 public class ContactController(ContactService ContactService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAllContacts()
     {
-        var contacts = await ContactService.GetAll();
-        return Ok(contacts);
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            var contacts = await ContactService.GetAll(userId);
+            return Ok(contacts);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetContactById(int id)
     {
-        var contact = await ContactService.GetById(id);
-        return Ok(contact);
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            var contact = await ContactService.GetById(id, userId);
+            return Ok(contact);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -26,8 +55,21 @@ public class ContactController(ContactService ContactService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var contact = await ContactService.Create(createContactDto);
-        return CreatedAtAction(nameof(GetContactById), new { id = contact.Id }, contact);
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            var contact = await ContactService.Create(createContactDto, userId);
+            return CreatedAtAction(nameof(GetContactById), new { id = contact.Id }, contact);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
@@ -36,8 +78,21 @@ public class ContactController(ContactService ContactService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var contact = await ContactService.Update(id, updateContactDto);
-        return Ok(contact);
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            var contact = await ContactService.Update(id, updateContactDto, userId);
+            return Ok(contact);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
@@ -45,7 +100,13 @@ public class ContactController(ContactService ContactService) : ControllerBase
     {
         try
         {
-            await ContactService.Delete(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Token inválido" });
+            }
+
+            await ContactService.Delete(id, userId);
             return Ok(new { message = "Contato removido com sucesso" });
         }
         catch (Exception ex)

@@ -33,3 +33,19 @@ public record UpdateAccountDto
     [StringLength(30, ErrorMessage = "Função deve ter no máximo 30 caracteres")]
     public string Role { get; init; }
 }
+
+public record LoginDto
+{
+    [Required(ErrorMessage = "Email é obrigatório")]
+    [EmailAddress(ErrorMessage = "Email deve ter um formato válido")]
+    public required string Email { get; init; }
+
+    [Required(ErrorMessage = "Senha é obrigatória")]
+    public required string Password { get; init; }
+}
+
+public record LoginResponseDto
+{
+    public required string Token { get; init; }
+    public required AccountEntity User { get; init; }
+}

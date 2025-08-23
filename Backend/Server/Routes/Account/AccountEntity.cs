@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Backend.Server.Routes.Product;
+namespace Backend.Server.Routes.Account;
 
-public class ProductEntity
+public class AccountEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -11,13 +11,19 @@ public class ProductEntity
 
     [Required]
     [StringLength(100)]
-    public string Name { get; set; } = string.Empty;
+    public string Username { get; set; }
 
     [Required]
-    public decimal Price { get; set; }
+    [StringLength(255)]
+    public string Email { get; set; }
 
-    [StringLength(500)]
-    public string Description { get; set; } = string.Empty;
+    [Required]
+    [StringLength(100)]
+    public string Password { get; set; }
+
+    [Required]
+    [StringLength(30)]
+    public string Role { get; set; }
 
     public DateTime DeletedAt { get; set; } = DateTime.MinValue;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

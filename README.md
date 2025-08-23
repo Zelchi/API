@@ -119,9 +119,8 @@ A forma mais fácil de testar é através da interface Swagger:
 - **Senha**: test
 
 ### API
-- **Ambiente Development**: http://localhost:5080
 
-## 🛠️ Comandos Úteis
+- **Ambiente Development**: http://localhost:5080
 
 ## 🧪 Fluxo de Teste Recomendado
 

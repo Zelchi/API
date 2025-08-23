@@ -9,11 +9,6 @@ public static class Authentication
     {
         string key = configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
         
-        if (key.Length < 32)
-        {
-            throw new InvalidOperationException("JWT key must be at least 32 characters long for HMAC-SHA256 security.");
-        }
-
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

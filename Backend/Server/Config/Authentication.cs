@@ -9,6 +9,11 @@ public static class Authentication
     {
         string key = configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
         
+        if (key.Length < 32)
+        {
+            throw new InvalidOperationException("A chave JWT deve ter pelo menos 32 caracteres");
+        }
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

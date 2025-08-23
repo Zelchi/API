@@ -64,14 +64,13 @@ public class AccountService(Database Context)
 
     public async Task<AccountEntity> Update(int id, UpdateAccountDto updateAccountDto)
     {
-        var account = await Context.Accounts
-            .FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue)
-            ?? throw new Exception($"Conta com ID {id} não encontrada");
+        var account = await Context.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue)
+        ?? throw new Exception($"Conta com ID {id} não encontrada");
 
         account.Username = updateAccountDto.Username ?? account.Username;
-        account.Email = updateAccountDto.Email ?? account.Email;
         account.Password = updateAccountDto.Password ?? account.Password;
         account.Role = updateAccountDto.Role ?? account.Role;
+
         account.UpdatedAt = DateTime.UtcNow;
 
         Context.Accounts.Update(account);

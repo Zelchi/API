@@ -3,11 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Server.Routes.Product;
 
-public class ProductService(Database context)
+public class ProductService(Database Context)
 {
-    private readonly Database Context = context;
-
-    public async Task<IEnumerable<ProductEntity>> GetAllProductsAsync()
+    public async Task<IEnumerable<ProductEntity>> GetAllProducts()
     {
         var products = await Context.Products
             .Where(p => p.DeletedAt == DateTime.MinValue)
@@ -26,7 +24,7 @@ public class ProductService(Database context)
         return products;
     }
 
-    public async Task<ProductEntity> GetProductByIdAsync(int id)
+    public async Task<ProductEntity> GetProductById(int id)
     {
         var product = await Context.Products
             .Where(p => p.Id == id && p.DeletedAt == DateTime.MinValue)
@@ -45,7 +43,7 @@ public class ProductService(Database context)
         return product;
     }
 
-    public async Task<ProductEntity> CreateProductAsync(CreateProductDto createProductDto)
+    public async Task<ProductEntity> CreateProduct(CreateProductDto createProductDto)
     {
         ProductEntity product = new()
         {
@@ -72,7 +70,7 @@ public class ProductService(Database context)
         };
     }
 
-    public async Task<ProductEntity> UpdateProductAsync(int id, UpdateProductDto updateProductDto)
+    public async Task<ProductEntity> UpdateProduct(int id, UpdateProductDto updateProductDto)
     {
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue) ??
             throw new KeyNotFoundException($"Produto com ID {id} não encontrado");
@@ -104,7 +102,7 @@ public class ProductService(Database context)
         };
     }
 
-    public async Task<bool> DeleteProductAsync(int id)
+    public async Task<bool> DeleteProduct(int id)
     {
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue);
 

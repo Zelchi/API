@@ -4,10 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Backend.Server.Routes.Contact;
 
-public class ContactService(Database context)
+public class ContactService(Database Context)
 {
-    private readonly Database Context = context;
-
     public async Task<IEnumerable<ContactEntity>> GetAllContactsAsync()
     {
         var contacts = await Context.Contacts
@@ -27,7 +25,7 @@ public class ContactService(Database context)
         return contacts;
     }
 
-    public async Task<ContactEntity> GetContactByIdAsync(int id)
+    public async Task<ContactEntity> GetContactById(int id)
     {
         var contact = await Context.Contacts
             .Where(c => c.DeletedAt == DateTime.MinValue)
@@ -46,7 +44,7 @@ public class ContactService(Database context)
         return contact;
     }
 
-    public async Task<ContactEntity> CreateContactAsync(CreateContactDto createContactDto)
+    public async Task<ContactEntity> CreateContact(CreateContactDto createContactDto)
     {
         var contact = new ContactEntity
         {
@@ -73,7 +71,7 @@ public class ContactService(Database context)
         };
     }
 
-    public async Task<ContactEntity> UpdateContactAsync(int id, UpdateContactDto updateContactDto)
+    public async Task<ContactEntity> UpdateContact(int id, UpdateContactDto updateContactDto)
     {
         var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue) ??
             throw new KeyNotFoundException($"Contato com ID {id} não encontrado");
@@ -98,7 +96,7 @@ public class ContactService(Database context)
         };
     }
 
-    public async Task<bool> DeleteContactAsync(int id)
+    public async Task<bool> DeleteContact(int id)
     {
         var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue);
 

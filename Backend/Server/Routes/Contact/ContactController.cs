@@ -18,7 +18,7 @@ public class ContactController(ContactService contactService) : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetContactById(int id)
     {
-        var contact = await ContactService.GetContactByIdAsync(id);
+        var contact = await ContactService.GetContactById(id);
         return Ok(contact);
     }
 
@@ -28,7 +28,7 @@ public class ContactController(ContactService contactService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var contact = await ContactService.CreateContactAsync(createContactDto);
+        var contact = await ContactService.CreateContact(createContactDto);
         return CreatedAtAction(nameof(GetContactById), new { id = contact.Id }, contact);
     }
 
@@ -38,14 +38,14 @@ public class ContactController(ContactService contactService) : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var contact = await ContactService.UpdateContactAsync(id, updateContactDto);
+        var contact = await ContactService.UpdateContact(id, updateContactDto);
         return Ok(contact);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContact(int id)
     {
-        var deleted = await ContactService.DeleteContactAsync(id);
+        var deleted = await ContactService.DeleteContact(id);
 
         if (!deleted)
             return NotFound(new { message = "Contato não encontrado" });

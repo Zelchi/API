@@ -2,11 +2,6 @@
 
 ## 📋 Visão Geral
 
-Esta é uma API RESTful desenvolvida com ASP.NET Core 9.0 que gerencia três entidades principais:
-- **Accounts** (Contas de usuário)
-- **Contacts** (Contatos)
-- **Products** (Produtos)
-
 ## 🛠️ Tecnologias Utilizadas
 
 - **.NET 9.0**
@@ -88,16 +83,7 @@ dotnet ef database update
 dotnet run
 ```
 
-A API estará disponível em:
-- **HTTP**: http://localhost:5080
-- **HTTPS**: https://localhost:7033
-
 ### Passo 4: Acessar a Documentação Swagger
-
-Com a aplicação rodando, acesse:
-- **Swagger UI**: http://localhost:5080/swagger
-
-## 🧪 Como Testar a API
 
 ### 1. Testando via Swagger UI
 
@@ -117,10 +103,6 @@ A forma mais fácil de testar é através da interface Swagger:
 - **Database**: test
 - **Usuário**: test
 - **Senha**: test
-
-### API
-
-- **Ambiente Development**: http://localhost:5080
 
 ## 🧪 Fluxo de Teste Recomendado
 

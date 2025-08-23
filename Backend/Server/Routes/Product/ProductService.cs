@@ -75,15 +75,11 @@ public class ProductService(Database Context)
         var product = await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == DateTime.MinValue) ??
             throw new Exception($"Produto com ID {id} não encontrado");
 
-        if (!string.IsNullOrEmpty(updateProductDto.Name))
-            product.Name = updateProductDto.Name;
+        if (!string.IsNullOrEmpty(updateProductDto.Name)) product.Name = updateProductDto.Name;
 
-        if (updateProductDto.Price.HasValue)
-            product.Price = updateProductDto.Price.Value;
-
-        if (!string.IsNullOrEmpty(updateProductDto.Description))
-            product.Description = updateProductDto.Description;
-
+        if (!string.IsNullOrEmpty(updateProductDto.Price.ToString())) product.Price = updateProductDto.Price;
+        
+        if (!string.IsNullOrEmpty(updateProductDto.Description)) product.Description = updateProductDto.Description;
 
         product.DeletedAt = DateTime.MinValue;
         product.UpdatedAt = DateTime.UtcNow;

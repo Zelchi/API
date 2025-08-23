@@ -9,6 +9,8 @@ public static class Service
         services.AddSwaggerGen();
 
         services.AddDbContext<Database>();
+        
+        services.AddScoped<Routes.Account.AccountService>();
         services.AddScoped<Routes.Contact.ContactService>();
         services.AddScoped<Routes.Product.ProductService>();
 

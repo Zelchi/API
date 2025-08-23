@@ -4,10 +4,8 @@ namespace Backend.Server.Routes.Contact;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class ContactController(ContactService contactService) : ControllerBase
+public class ContactController(ContactService ContactService) : ControllerBase
 {
-    private readonly ContactService ContactService = contactService;
-
     [HttpGet]
     public async Task<IActionResult> GetAllContacts()
     {

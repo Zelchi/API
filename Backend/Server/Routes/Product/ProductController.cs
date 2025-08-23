@@ -4,10 +4,8 @@ namespace Backend.Server.Routes.Product;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class ProductController(ProductService productService) : ControllerBase
+public class ProductController(ProductService ProductService) : ControllerBase
 {
-    private readonly ProductService ProductService = productService;
-
     [HttpGet]
     public async Task<IActionResult> GetAllProducts()
     {

@@ -1,5 +1,5 @@
-using Backend.Server.Config;
 using Microsoft.EntityFrameworkCore;
+using Backend.Server.Config;
 
 namespace Backend.Server.Routes.Account;
 

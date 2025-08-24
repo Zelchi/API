@@ -38,7 +38,6 @@ public class AccountServiceTests : TestBase
         result.Role.Should().Be("User");
         result.Id.Should().BeGreaterThan(0);
         
-        // Verificar se foi salvo no banco
         var savedAccount = await _context.Accounts.FindAsync(result.Id);
         savedAccount.Should().NotBeNull();
     }

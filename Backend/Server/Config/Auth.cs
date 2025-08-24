@@ -3,9 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Server.Config;
 
-public static class Authentication
+public static class Auth
 {
-    public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
     {
         string key = configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
         

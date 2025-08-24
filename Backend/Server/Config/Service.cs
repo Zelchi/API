@@ -40,7 +40,7 @@ public static class Service
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         
-        services.ConfigureAuthentication(configuration);
+        services.ConfigureAuth(configuration);
         services.AddAuthorization();
 
         services.AddDbContext<Database>();

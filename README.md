@@ -38,13 +38,13 @@ Application/
 
 ### Pré-requisitos
 
-1. **.NET 9.0 SDK** instalado
-2. **Docker** e **Docker Compose** instalados
-3. **PowerShell** (Windows)
+1. **.NET 9.0 SDK**
+2. **Docker** e **Docker Compose**
+3. **Terminal**
 
 ### Passo 1: Iniciar o Banco de Dados
 
-1. Abra o PowerShell na pasta raiz do projeto
+1. Abra o Terminal na pasta raiz do projeto
 2. Execute o comando para iniciar o MySQL:
 
 ```powershell
@@ -107,9 +107,10 @@ A forma mais fácil de testar é através da interface Swagger:
 ## 🧪 Fluxo de Teste Recomendado
 
 1. **Iniciar infraestrutura**: `docker-compose up -d`
+1. **Gerar as migrações**: `dotnet ef migrations add init`
 2. **Aplicar migrações**: `dotnet ef database update`
 3. **Iniciar API**: `dotnet run`
-4. **Criar uma conta** via Swagger ou PowerShell
+4. **Criar uma conta** via Swagger
 5. **Criar contatos e produtos** associados à conta
 6. **Testar operações CRUD** em todas as entidades
 7. **Verificar soft delete** nas contas

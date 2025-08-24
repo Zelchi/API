@@ -7,28 +7,20 @@ public static class Auth
 {
     public static void ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        string key = configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
-        
-        if (key.Length < 32)
-        {
-            throw new InvalidOperationException("A chave JWT deve ter pelo menos 32 caracteres");
-        }
+        var key = configuration["JWT:Key"] ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
+        if (key.Length < 32) throw new Exception("A chave JWT deve ter pelo menos 32 caracteres");
 
-        services.AddAuthentication(options =>
+        var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));
+        var tokenValidationParameters = new TokenValidationParameters
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = signingKey
+        };
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateLifetime = true,
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key)),
-                ClockSkew = TimeSpan.Zero
-            };
+            options.TokenValidationParameters = tokenValidationParameters;
         });
     }
 }

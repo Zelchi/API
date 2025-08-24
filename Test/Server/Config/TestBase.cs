@@ -7,8 +7,8 @@ namespace Test.Server.Config;
 [TestClass]
 public abstract class TestBase : IDisposable
 {
-    protected Database _context;
-    protected IConfiguration _configuration;
+    protected Database Context;
+    protected IConfiguration Configuration;
 
     [TestInitialize]
     public virtual void Setup()
@@ -22,7 +22,7 @@ public abstract class TestBase : IDisposable
             {"JWT:ExpiryInMinutes", "60"}
         };
 
-        _configuration = new ConfigurationBuilder()
+        Configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(configData)
             .Build();
 
@@ -30,14 +30,14 @@ public abstract class TestBase : IDisposable
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        _context = new Database(options, _configuration);
-        _context.Database.EnsureCreated();
+        Context = new Database(options, Configuration);
+        Context.Database.EnsureCreated();
     }
 
     [TestCleanup]
     public virtual void Cleanup()
     {
-        _context?.Dispose();
+        Context?.Dispose();
     }
 
     protected void SeedTestData()
@@ -52,12 +52,12 @@ public abstract class TestBase : IDisposable
             UpdatedAt = DateTime.UtcNow
         };
 
-        _context.Accounts.Add(testAccount);
-        _context.SaveChanges();
+        Context.Accounts.Add(testAccount);
+        Context.SaveChanges();
     }
 
     public void Dispose()
     {
-        _context?.Dispose();
+        Context?.Dispose();
     }
 }

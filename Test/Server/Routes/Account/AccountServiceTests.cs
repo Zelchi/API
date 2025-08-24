@@ -7,14 +7,14 @@ namespace Test.Server.Routes.Account;
 [TestClass]
 public class AccountServiceTests : TestBase
 {
-    private AccountService _accountService;
+    private AccountService AccountService;
 
     [TestInitialize]
     public override void Setup()
     {
         base.Setup();
-        var accountRepository = new AccountRepository(_context);
-        _accountService = new AccountService(accountRepository, _configuration);
+        var accountRepository = new AccountRepository(Context);
+        AccountService = new AccountService(accountRepository, Configuration);
     }
 
     [TestMethod]
@@ -30,7 +30,7 @@ public class AccountServiceTests : TestBase
         };
 
         // Act
-        var result = await _accountService.Create(createDto);
+        var result = await AccountService.Create(createDto);
 
         // Assert
         result.Should().NotBeNull();
@@ -39,7 +39,7 @@ public class AccountServiceTests : TestBase
         result.Role.Should().Be("User");
         result.Id.Should().BeGreaterThan(0);
         
-        var createdAccount = await _context.Accounts.FindAsync(result.Id);
+        var createdAccount = await Context.Accounts.FindAsync(result.Id);
         createdAccount.Should().NotBeNull();
         createdAccount.Username.Should().Be("newuser");
     }
@@ -58,7 +58,7 @@ public class AccountServiceTests : TestBase
         };
 
         // Act & Assert
-        var action = async () => await _accountService.Create(createDto);
+        var action = async () => await AccountService.Create(createDto);
         await action.Should().ThrowAsync<Exception>()
             .WithMessage("Email já está em uso");
     }
@@ -70,7 +70,7 @@ public class AccountServiceTests : TestBase
         SeedTestData();
 
         // Act
-        var result = await _accountService.GetAll();
+        var result = await AccountService.GetAll();
 
         // Assert
         result.Should().NotBeNull();
@@ -82,10 +82,10 @@ public class AccountServiceTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
 
         // Act
-        var result = await _accountService.GetById(existingAccount.Id);
+        var result = await AccountService.GetById(existingAccount.Id);
 
         // Assert
         result.Should().NotBeNull();
@@ -100,7 +100,7 @@ public class AccountServiceTests : TestBase
         var nonExistingId = 999;
 
         // Act & Assert
-        var action = async () => await _accountService.GetById(nonExistingId);
+        var action = async () => await AccountService.GetById(nonExistingId);
         await action.Should().ThrowAsync<Exception>();
     }
 
@@ -116,13 +116,13 @@ public class AccountServiceTests : TestBase
         };
 
         // Act
-        var result = await _accountService.Login(loginDto);
+        var result = await AccountService.Login(loginDto);
 
         // Assert
         result.Should().NotBeNull();
         result.Token.Should().NotBeNullOrEmpty();
-        result.User.Should().NotBeNull();
-        result.User.Email.Should().Be("test@test.com");
+        result.Username.Should().NotBeNull();
+        result.Token.Split('.').Length.Should().Be(3);
     }
 
     [TestMethod]
@@ -137,7 +137,7 @@ public class AccountServiceTests : TestBase
         };
 
         // Act & Assert
-        var action = async () => await _accountService.Login(loginDto);
+        var action = async () => await AccountService.Login(loginDto);
         await action.Should().ThrowAsync<Exception>();
     }
 
@@ -153,7 +153,7 @@ public class AccountServiceTests : TestBase
         };
 
         // Act & Assert
-        var action = async () => await _accountService.Login(loginDto);
+        var action = async () => await AccountService.Login(loginDto);
         await action.Should().ThrowAsync<Exception>();
     }
 
@@ -162,7 +162,7 @@ public class AccountServiceTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
         var updateDto = new UpdateAccountDto
         {
             Username = "updateduser",
@@ -170,7 +170,7 @@ public class AccountServiceTests : TestBase
         };
 
         // Act
-        var result = await _accountService.Update(existingAccount.Id, updateDto);
+        var result = await AccountService.Update(existingAccount.Id, updateDto);
 
         // Assert
         result.Should().NotBeNull();
@@ -183,13 +183,13 @@ public class AccountServiceTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
 
         // Act
-        await _accountService.Delete(existingAccount.Id);
+        await AccountService.Delete(existingAccount.Id);
 
         // Assert
-        _context.Entry(existingAccount).Reload();
+        Context.Entry(existingAccount).Reload();
         existingAccount.DeletedAt.Should().NotBe(DateTime.MinValue);
     }
 }

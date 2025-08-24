@@ -15,7 +15,7 @@ public class ProductServiceTests : TestBase
     public override void Setup()
     {
         base.Setup();
-        var productRepository = new ProductRepository(_context);
+        var productRepository = new ProductRepository(Context);
         _productService = new ProductService(productRepository);
     }
 
@@ -31,8 +31,8 @@ public class ProductServiceTests : TestBase
             UpdatedAt = DateTime.UtcNow
         };
 
-        _context.Accounts.Add(testAccount);
-        _context.SaveChanges();
+        Context.Accounts.Add(testAccount);
+        Context.SaveChanges();
         _testAccountId = testAccount.Id;
 
         var testProduct = new ProductEntity
@@ -45,8 +45,8 @@ public class ProductServiceTests : TestBase
             UpdatedAt = DateTime.UtcNow
         };
 
-        _context.Products.Add(testProduct);
-        _context.SaveChanges();
+        Context.Products.Add(testProduct);
+        Context.SaveChanges();
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class ProductServiceTests : TestBase
         result.AccountId.Should().Be(_testAccountId);
         result.Id.Should().BeGreaterThan(0);
 
-        var savedProduct = await _context.Products.FindAsync(result.Id);
+        var savedProduct = await Context.Products.FindAsync(result.Id);
         savedProduct.Should().NotBeNull();
     }
 
@@ -97,7 +97,7 @@ public class ProductServiceTests : TestBase
     {
         // Arrange
         SeedTestDataForProducts();
-        var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
+        var existingProduct = Context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act
         var result = await _productService.GetById(existingProduct.Id, _testAccountId);
@@ -132,10 +132,10 @@ public class ProductServiceTests : TestBase
             Password = BCrypt.Net.BCrypt.HashPassword("password123"),
             Role = "User"
         };
-        _context.Accounts.Add(otherAccount);
-        _context.SaveChanges();
+        Context.Accounts.Add(otherAccount);
+        Context.SaveChanges();
 
-        var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
+        var existingProduct = Context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act & Assert
         var action = async () => await _productService.GetById(existingProduct.Id, otherAccount.Id);
@@ -147,7 +147,7 @@ public class ProductServiceTests : TestBase
     {
         // Arrange
         SeedTestDataForProducts();
-        var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
+        var existingProduct = Context.Products.First(p => p.AccountId == _testAccountId);
         var updateDto = new UpdateProductDto
         {
             Name = "Produto Atualizado",
@@ -185,7 +185,7 @@ public class ProductServiceTests : TestBase
     {
         // Arrange
         SeedTestDataForProducts();
-        var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
+        var existingProduct = Context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act
         var result = await _productService.Delete(existingProduct.Id, _testAccountId);
@@ -193,7 +193,7 @@ public class ProductServiceTests : TestBase
         // Assert
         result.Should().BeTrue();
 
-        _context.Entry(existingProduct).Reload();
+        Context.Entry(existingProduct).Reload();
         existingProduct.DeletedAt.Should().NotBe(DateTime.MinValue);
     }
 
@@ -219,10 +219,10 @@ public class ProductServiceTests : TestBase
             Password = BCrypt.Net.BCrypt.HashPassword("password123"),
             Role = "User"
         };
-        _context.Accounts.Add(otherAccount);
-        _context.SaveChanges();
+        Context.Accounts.Add(otherAccount);
+        Context.SaveChanges();
 
-        var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
+        var existingProduct = Context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act
         var result = await _productService.Delete(existingProduct.Id, otherAccount.Id);

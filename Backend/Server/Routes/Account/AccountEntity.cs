@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Backend.Server.Routes.Contact;
 using Backend.Server.Routes.Product;
 
 namespace Backend.Server.Routes.Account;
@@ -28,7 +27,6 @@ public class AccountEntity
     [StringLength(30)]
     public string Role { get; set; }
 
-    public Collection<ContactEntity> Contacts { get; set; }
     public Collection<ProductEntity> Products { get; set; }
 
     public DateTime DeletedAt { get; set; } = DateTime.MinValue;

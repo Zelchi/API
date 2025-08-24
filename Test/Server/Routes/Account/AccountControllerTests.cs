@@ -8,16 +8,16 @@ namespace Test.Server.Routes.Account;
 [TestClass]
 public class AccountControllerTests : TestBase
 {
-    private AccountService _accountService;
-    private AccountController _controller;
+    private AccountService AccountService;
+    private AccountController Controller;
 
     [TestInitialize]
     public override void Setup()
     {
         base.Setup();
-        var accountRepository = new AccountRepository(_context);
-        _accountService = new AccountService(accountRepository, _configuration);
-        _controller = new AccountController(_accountService);
+        var accountRepository = new AccountRepository(Context);
+        AccountService = new AccountService(accountRepository, Configuration);
+        Controller = new AccountController(AccountService);
     }
 
     [TestMethod]
@@ -33,7 +33,7 @@ public class AccountControllerTests : TestBase
         };
 
         // Act
-        var result = await _controller.CreateAccount(createDto);
+        var result = await Controller.CreateAccount(createDto);
 
         // Assert
         result.Should().BeOfType<CreatedAtActionResult>();
@@ -59,7 +59,7 @@ public class AccountControllerTests : TestBase
         };
 
         // Act
-        var result = await _controller.CreateAccount(createDto);
+        var result = await Controller.CreateAccount(createDto);
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
@@ -77,7 +77,7 @@ public class AccountControllerTests : TestBase
         };
 
         // Act
-        var result = await _controller.Login(loginDto);
+        var result = await Controller.Login(loginDto);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -86,7 +86,7 @@ public class AccountControllerTests : TestBase
         
         loginResponse.Should().NotBeNull();
         loginResponse.Token.Should().NotBeNullOrEmpty();
-        loginResponse.User.Should().NotBeNull();
+        loginResponse.Username.Should().NotBeNull();
     }
 
     [TestMethod]
@@ -100,7 +100,7 @@ public class AccountControllerTests : TestBase
         };
 
         // Act
-        var result = await _controller.Login(loginDto);
+        var result = await Controller.Login(loginDto);
 
         // Assert
         result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -111,10 +111,10 @@ public class AccountControllerTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
 
         // Act
-        var result = await _controller.GetAccountById(existingAccount.Id);
+        var result = await Controller.GetAccountById(existingAccount.Id);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -129,7 +129,7 @@ public class AccountControllerTests : TestBase
     public async Task GetAccountById_NonExistingId_ShouldReturnNotFound()
     {
         // Act
-        var result = await _controller.GetAccountById(999);
+        var result = await Controller.GetAccountById(999);
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
@@ -140,7 +140,7 @@ public class AccountControllerTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
         var updateDto = new UpdateAccountDto
         {
             Username = "updateduser",
@@ -148,7 +148,7 @@ public class AccountControllerTests : TestBase
         };
 
         // Act
-        var result = await _controller.UpdateAccount(existingAccount.Id, updateDto);
+        var result = await Controller.UpdateAccount(existingAccount.Id, updateDto);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -165,10 +165,10 @@ public class AccountControllerTests : TestBase
     {
         // Arrange
         SeedTestData();
-        var existingAccount = _context.Accounts.First();
+        var existingAccount = Context.Accounts.First();
 
         // Act
-        var result = await _controller.DeleteAccount(existingAccount.Id);
+        var result = await Controller.DeleteAccount(existingAccount.Id);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -178,7 +178,7 @@ public class AccountControllerTests : TestBase
     public async Task DeleteAccount_NonExistingId_ShouldReturnNotFound()
     {
         // Act
-        var result = await _controller.DeleteAccount(999);
+        var result = await Controller.DeleteAccount(999);
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();

@@ -45,6 +45,12 @@ public static class Service
 
         services.AddDbContext<Database>();
         
+        // Repositories
+        services.AddScoped<Routes.Account.AccountRepository>();
+        services.AddScoped<Routes.Contact.ContactRepository>();
+        services.AddScoped<Routes.Product.ProductRepository>();
+        
+        // Services
         services.AddScoped<Routes.Account.AccountService>();
         services.AddScoped<Routes.Contact.ContactService>();
         services.AddScoped<Routes.Product.ProductService>();

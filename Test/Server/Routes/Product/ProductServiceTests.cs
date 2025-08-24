@@ -9,14 +9,14 @@ namespace Test.Server.Routes.Product;
 public class ProductServiceTests : TestBase
 {
     private ProductService _productService;
-    private int _testAccountId;
+    private int _testAccountId = 1;
 
     [TestInitialize]
     public override void Setup()
     {
         base.Setup();
-        _productService = new ProductService(_context);
-        SeedTestDataForProducts();
+        var productRepository = new ProductRepository(_context);
+        _productService = new ProductService(productRepository);
     }
 
     private void SeedTestDataForProducts()
@@ -53,6 +53,7 @@ public class ProductServiceTests : TestBase
     public async Task Create_ValidProduct_ShouldReturnCreatedProduct()
     {
         // Arrange
+        SeedTestDataForProducts();
         var createDto = new CreateProductDto
         {
             Name = "Novo Produto",
@@ -78,6 +79,9 @@ public class ProductServiceTests : TestBase
     [TestMethod]
     public async Task GetAll_ShouldReturnUserProducts()
     {
+        // Arrange
+        SeedTestDataForProducts();
+        
         // Act
         var result = await _productService.GetAll(_testAccountId);
 
@@ -92,6 +96,7 @@ public class ProductServiceTests : TestBase
     public async Task GetById_ExistingProduct_ShouldReturnProduct()
     {
         // Arrange
+        SeedTestDataForProducts();
         var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act
@@ -119,6 +124,7 @@ public class ProductServiceTests : TestBase
     public async Task GetById_ProductFromDifferentUser_ShouldThrowException()
     {
         // Arrange
+        SeedTestDataForProducts();
         var otherAccount = new AccountEntity
         {
             Username = "otheruser",
@@ -140,6 +146,7 @@ public class ProductServiceTests : TestBase
     public async Task Update_ValidData_ShouldUpdateProduct()
     {
         // Arrange
+        SeedTestDataForProducts();
         var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
         var updateDto = new UpdateProductDto
         {
@@ -177,6 +184,7 @@ public class ProductServiceTests : TestBase
     public async Task Delete_ExistingProduct_ShouldReturnTrue()
     {
         // Arrange
+        SeedTestDataForProducts();
         var existingProduct = _context.Products.First(p => p.AccountId == _testAccountId);
 
         // Act
@@ -185,8 +193,8 @@ public class ProductServiceTests : TestBase
         // Assert
         result.Should().BeTrue();
 
-        var deletedProduct = await _context.Products.FindAsync(existingProduct.Id);
-        deletedProduct.DeletedAt.Should().NotBe(DateTime.MinValue);
+        _context.Entry(existingProduct).Reload();
+        existingProduct.DeletedAt.Should().NotBe(DateTime.MinValue);
     }
 
     [TestMethod]
@@ -203,6 +211,7 @@ public class ProductServiceTests : TestBase
     public async Task Delete_ProductFromDifferentUser_ShouldReturnFalse()
     {
         // Arrange
+        SeedTestDataForProducts();
         var otherAccount = new AccountEntity
         {
             Username = "otheruser",

@@ -8,14 +8,15 @@ namespace Test.Server.Routes.Account;
 [TestClass]
 public class AccountControllerTests : TestBase
 {
-    private AccountController _controller;
     private AccountService _accountService;
+    private AccountController _controller;
 
     [TestInitialize]
     public override void Setup()
     {
         base.Setup();
-        _accountService = new AccountService(_context, _configuration);
+        var accountRepository = new AccountRepository(_context);
+        _accountService = new AccountService(accountRepository, _configuration);
         _controller = new AccountController(_accountService);
     }
 

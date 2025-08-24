@@ -13,7 +13,8 @@ public class AccountServiceTests : TestBase
     public override void Setup()
     {
         base.Setup();
-        _accountService = new AccountService(_context, _configuration);
+        var accountRepository = new AccountRepository(_context);
+        _accountService = new AccountService(accountRepository, _configuration);
     }
 
     [TestMethod]
@@ -38,8 +39,9 @@ public class AccountServiceTests : TestBase
         result.Role.Should().Be("User");
         result.Id.Should().BeGreaterThan(0);
         
-        var savedAccount = await _context.Accounts.FindAsync(result.Id);
-        savedAccount.Should().NotBeNull();
+        var createdAccount = await _context.Accounts.FindAsync(result.Id);
+        createdAccount.Should().NotBeNull();
+        createdAccount.Username.Should().Be("newuser");
     }
 
     [TestMethod]
@@ -57,7 +59,8 @@ public class AccountServiceTests : TestBase
 
         // Act & Assert
         var action = async () => await _accountService.Create(createDto);
-        await action.Should().ThrowAsync<Exception>();
+        await action.Should().ThrowAsync<Exception>()
+            .WithMessage("Email já está em uso");
     }
 
     [TestMethod]
@@ -186,7 +189,7 @@ public class AccountServiceTests : TestBase
         await _accountService.Delete(existingAccount.Id);
 
         // Assert
-        var deletedAccount = await _context.Accounts.FindAsync(existingAccount.Id);
-        deletedAccount.DeletedAt.Should().NotBe(DateTime.MinValue);
+        _context.Entry(existingAccount).Reload();
+        existingAccount.DeletedAt.Should().NotBe(DateTime.MinValue);
     }
 }

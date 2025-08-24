@@ -3,46 +3,43 @@ using Backend.Server.Config;
 
 namespace Backend.Server.Routes.Contact;
 
-public class ContactService(Database Context)
+public class ContactService(ContactRepository contactRepository)
 {
+    private readonly ContactRepository _contactRepository = contactRepository;
+
     public async Task<IEnumerable<ContactEntity>> GetAll(int accountId)
     {
-        var contacts = await Context.Contacts
-            .Where(c => c.DeletedAt == DateTime.MinValue && c.AccountId == accountId)
-            .Select(c => new ContactEntity
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Phone = c.Phone,
-                Email = c.Email,
-                AccountId = c.AccountId,
-                DeletedAt = c.DeletedAt,
-                CreatedAt = c.CreatedAt,
-                UpdatedAt = c.UpdatedAt
-            })
-            .ToListAsync();
-
-        return contacts;
+        var contacts = await _contactRepository.GetAllByAccountIdAsync(accountId);
+        return contacts.Select(c => new ContactEntity
+        {
+            Id = c.Id,
+            Name = c.Name,
+            Phone = c.Phone,
+            Email = c.Email,
+            AccountId = c.AccountId,
+            DeletedAt = c.DeletedAt,
+            CreatedAt = c.CreatedAt,
+            UpdatedAt = c.UpdatedAt
+        });
     }
 
     public async Task<ContactEntity> GetById(int id, int accountId)
     {
-        var contact = await Context.Contacts
-            .Where(c => c.Id == id && c.DeletedAt == DateTime.MinValue && c.AccountId == accountId)
-            .Select(c => new ContactEntity
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Phone = c.Phone,
-                Email = c.Email,
-                AccountId = c.AccountId,
-                DeletedAt = c.DeletedAt,
-                CreatedAt = c.CreatedAt,
-                UpdatedAt = c.UpdatedAt
-            })
-            .FirstOrDefaultAsync() ?? throw new Exception($"Contato com ID {id} não encontrado");
+        var contact = await _contactRepository.GetByIdAsync(id, accountId);
+        if (contact == null)
+            throw new Exception($"Contato com ID {id} não encontrado");
 
-        return contact;
+        return new ContactEntity
+        {
+            Id = contact.Id,
+            Name = contact.Name,
+            Phone = contact.Phone,
+            Email = contact.Email,
+            AccountId = contact.AccountId,
+            DeletedAt = contact.DeletedAt,
+            CreatedAt = contact.CreatedAt,
+            UpdatedAt = contact.UpdatedAt
+        };
     }
 
     public async Task<ContactEntity> Create(CreateContactDto createContactDto, int accountId)
@@ -52,62 +49,55 @@ public class ContactService(Database Context)
             Name = createContactDto.Name,
             Phone = createContactDto.Phone,
             Email = createContactDto.Email,
-            AccountId = accountId,
-            DeletedAt = DateTime.MinValue,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            AccountId = accountId
         };
 
-        Context.Contacts.Add(contact);
-        await Context.SaveChangesAsync();
+        var createdContact = await _contactRepository.CreateAsync(contact);
 
         return new ContactEntity
         {
-            Id = contact.Id,
-            Name = contact.Name,
-            Phone = contact.Phone,
-            Email = contact.Email,
-            AccountId = contact.AccountId,
-            DeletedAt = contact.DeletedAt,
-            CreatedAt = contact.CreatedAt,
-            UpdatedAt = contact.UpdatedAt
+            Id = createdContact.Id,
+            Name = createdContact.Name,
+            Phone = createdContact.Phone,
+            Email = createdContact.Email,
+            AccountId = createdContact.AccountId,
+            DeletedAt = createdContact.DeletedAt,
+            CreatedAt = createdContact.CreatedAt,
+            UpdatedAt = createdContact.UpdatedAt
         };
     }
 
     public async Task<ContactEntity> Update(int id, UpdateContactDto updateContactDto, int accountId)
     {
-        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue && c.AccountId == accountId) ??
+        var contact = await _contactRepository.GetByIdAsync(id, accountId);
+        if (contact == null)
             throw new Exception($"Contato com ID {id} não encontrado");
 
         if (!string.IsNullOrEmpty(updateContactDto.Name)) contact.Name = updateContactDto.Name;
         if (!string.IsNullOrEmpty(updateContactDto.Phone)) contact.Phone = updateContactDto.Phone;
         if (!string.IsNullOrEmpty(updateContactDto.Email)) contact.Email = updateContactDto.Email;
 
-        contact.UpdatedAt = DateTime.UtcNow;
-
-        await Context.SaveChangesAsync();
+        var updatedContact = await _contactRepository.UpdateAsync(contact);
 
         return new ContactEntity
         {
-            Id = contact.Id,
-            Name = contact.Name,
-            Phone = contact.Phone,
-            Email = contact.Email,
-            AccountId = contact.AccountId,
-            DeletedAt = contact.DeletedAt,
-            CreatedAt = contact.CreatedAt,
-            UpdatedAt = contact.UpdatedAt
+            Id = updatedContact.Id,
+            Name = updatedContact.Name,
+            Phone = updatedContact.Phone,
+            Email = updatedContact.Email,
+            AccountId = updatedContact.AccountId,
+            DeletedAt = updatedContact.DeletedAt,
+            CreatedAt = updatedContact.CreatedAt,
+            UpdatedAt = updatedContact.UpdatedAt
         };
     }
 
     public async Task Delete(int id, int accountId)
     {
-        var contact = await Context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == DateTime.MinValue && c.AccountId == accountId)
-        ?? throw new Exception($"Contato com ID {id} não encontrado");
+        var exists = await _contactRepository.ExistsAsync(id, accountId);
+        if (!exists)
+            throw new Exception($"Contato com ID {id} não encontrado");
 
-        contact.DeletedAt = DateTime.UtcNow;
-        contact.UpdatedAt = DateTime.UtcNow;
-
-        await Context.SaveChangesAsync();
+        await _contactRepository.DeleteAsync(id, accountId);
     }
 }

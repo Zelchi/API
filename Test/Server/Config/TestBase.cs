@@ -13,7 +13,6 @@ public abstract class TestBase : IDisposable
     [TestInitialize]
     public virtual void Setup()
     {
-        // Configuração em memória
         var configData = new Dictionary<string, string>
         {
             {"ConnectionStrings:DefaultConnection", "Server=localhost;Database=test;Uid=test;Pwd=test;"},
@@ -27,7 +26,6 @@ public abstract class TestBase : IDisposable
             .AddInMemoryCollection(configData)
             .Build();
 
-        // Configuração do banco em memória
         var options = new DbContextOptionsBuilder<Database>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -44,7 +42,6 @@ public abstract class TestBase : IDisposable
 
     protected void SeedTestData()
     {
-        // Dados de teste básicos
         var testAccount = new Backend.Server.Routes.Account.AccountEntity
         {
             Username = "testuser",

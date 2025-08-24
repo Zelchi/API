@@ -9,14 +9,14 @@ namespace Test.Server.Routes.Contact;
 public class ContactServiceTests : TestBase
 {
     private ContactService _contactService;
-    private int _testAccountId;
+    private int _testAccountId = 1;
 
     [TestInitialize]
     public override void Setup()
     {
         base.Setup();
-        _contactService = new ContactService(_context);
-        SeedTestDataForContacts();
+        var contactRepository = new ContactRepository(_context);
+        _contactService = new ContactService(contactRepository);
     }
 
     private void SeedTestDataForContacts()
@@ -53,6 +53,7 @@ public class ContactServiceTests : TestBase
     public async Task Create_ValidContact_ShouldReturnCreatedContact()
     {
         // Arrange
+        SeedTestDataForContacts();
         var createDto = new CreateContactDto
         {
             Name = "Maria Santos",
@@ -71,14 +72,17 @@ public class ContactServiceTests : TestBase
         result.AccountId.Should().Be(_testAccountId);
         result.Id.Should().BeGreaterThan(0);
 
-        // Verificar se foi salvo no banco
-        var savedContact = await _context.Contacts.FindAsync(result.Id);
-        savedContact.Should().NotBeNull();
+        var createdContact = await _context.Contacts.FindAsync(result.Id);
+        createdContact.Should().NotBeNull();
+        createdContact.Name.Should().Be("Maria Santos");
     }
 
     [TestMethod]
     public async Task GetAll_ShouldReturnUserContacts()
     {
+        // Arrange
+        SeedTestDataForContacts();
+        
         // Act
         var result = await _contactService.GetAll(_testAccountId);
 
@@ -93,6 +97,7 @@ public class ContactServiceTests : TestBase
     public async Task GetById_ExistingContact_ShouldReturnContact()
     {
         // Arrange
+        SeedTestDataForContacts();
         var existingContact = _context.Contacts.First(c => c.AccountId == _testAccountId);
 
         // Act
@@ -120,6 +125,7 @@ public class ContactServiceTests : TestBase
     public async Task GetById_ContactFromDifferentUser_ShouldThrowException()
     {
         // Arrange
+        SeedTestDataForContacts();
         var otherAccount = new AccountEntity
         {
             Username = "otheruser",
@@ -141,6 +147,7 @@ public class ContactServiceTests : TestBase
     public async Task Update_ValidData_ShouldUpdateContact()
     {
         // Arrange
+        SeedTestDataForContacts();
         var existingContact = _context.Contacts.First(c => c.AccountId == _testAccountId);
         var updateDto = new UpdateContactDto
         {
@@ -164,6 +171,7 @@ public class ContactServiceTests : TestBase
     public async Task Update_PartialData_ShouldUpdateOnlyProvidedFields()
     {
         // Arrange
+        SeedTestDataForContacts();
         var existingContact = _context.Contacts.First(c => c.AccountId == _testAccountId);
         var originalPhone = existingContact.Phone;
         var originalEmail = existingContact.Email;
@@ -201,15 +209,16 @@ public class ContactServiceTests : TestBase
     public async Task Delete_ExistingContact_ShouldMarkAsDeleted()
     {
         // Arrange
+        SeedTestDataForContacts();
         var existingContact = _context.Contacts.First(c => c.AccountId == _testAccountId);
 
         // Act
         await _contactService.Delete(existingContact.Id, _testAccountId);
 
         // Assert
-        var deletedContact = await _context.Contacts.FindAsync(existingContact.Id);
-        deletedContact.DeletedAt.Should().NotBe(DateTime.MinValue);
-        deletedContact.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+        _context.Entry(existingContact).Reload();
+        existingContact.DeletedAt.Should().NotBe(DateTime.MinValue);
+        existingContact.UpdatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
     }
 
     [TestMethod]
@@ -224,6 +233,7 @@ public class ContactServiceTests : TestBase
     public async Task Delete_ContactFromDifferentUser_ShouldThrowException()
     {
         // Arrange
+        SeedTestDataForContacts();
         var otherAccount = new AccountEntity
         {
             Username = "otheruser",

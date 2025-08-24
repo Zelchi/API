@@ -148,7 +148,7 @@ public class AccountService(Database Context, IConfiguration Configuration)
 
     private string GenerateJwtToken(AccountEntity account)
     {
-        var key = Configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKey";
+        var key = Configuration.GetSection("JWT").GetValue<string>("Key") ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenKey = Encoding.UTF8.GetBytes(key);
 

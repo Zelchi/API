@@ -121,6 +121,6 @@ A forma mais fácil de testar é através da interface Swagger:
 - Todas as datas são armazenadas em **UTC**
 - A validação de dados é feita via **Data Annotations**
 - O Swagger está disponível apenas em **Development**
-- As senhas são armazenadas em **texto plano** (não recomendado para produção)
+- As senhas são criptografadas com **BCrypt** para segurança
 
 ---

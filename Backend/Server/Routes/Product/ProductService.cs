@@ -1,15 +1,10 @@
-using Backend.Server.Config;
-using Microsoft.EntityFrameworkCore;
-
 namespace Backend.Server.Routes.Product;
 
-public class ProductService(ProductRepository productRepository)
+public class ProductService(ProductRepository ProductRepository)
 {
-    private readonly ProductRepository _productRepository = productRepository;
-
     public async Task<IEnumerable<ProductEntity>> GetAll(int accountId)
     {
-        var products = await _productRepository.GetAllByAccountIdAsync(accountId);
+        var products = await ProductRepository.GetAllByAccountId(accountId);
         return products.Select(p => new ProductEntity
         {
             Id = p.Id,
@@ -25,9 +20,7 @@ public class ProductService(ProductRepository productRepository)
 
     public async Task<ProductEntity> GetById(int id, int accountId)
     {
-        var product = await _productRepository.GetByIdAsync(id, accountId);
-        if (product == null)
-            throw new Exception($"Produto com ID {id} não encontrado");
+        var product = await ProductRepository.GetById(id, accountId) ?? throw new Exception($"Produto com ID {id} não encontrado");
             
         return new ProductEntity
         {
@@ -52,7 +45,7 @@ public class ProductService(ProductRepository productRepository)
             AccountId = accountId
         };
 
-        var createdProduct = await _productRepository.CreateAsync(product);
+        var createdProduct = await ProductRepository.Create(product);
         
         return new ProductEntity
         {
@@ -69,15 +62,12 @@ public class ProductService(ProductRepository productRepository)
 
     public async Task<ProductEntity> Update(int id, UpdateProductDto updateProductDto, int accountId)
     {
-        var product = await _productRepository.GetByIdAsync(id, accountId);
-        if (product == null)
-            throw new Exception($"Produto com ID {id} não encontrado");
-
+        var product = await ProductRepository.GetById(id, accountId) ?? throw new Exception($"Produto com ID {id} não encontrado");
         if (!string.IsNullOrEmpty(updateProductDto.Name)) product.Name = updateProductDto.Name;
         if (updateProductDto.Price.HasValue && updateProductDto.Price > 0) product.Price = updateProductDto.Price.Value;
         if (!string.IsNullOrEmpty(updateProductDto.Description)) product.Description = updateProductDto.Description;
 
-        var updatedProduct = await _productRepository.UpdateAsync(product);
+        var updatedProduct = await ProductRepository.Update(product);
 
         return new ProductEntity
         {
@@ -94,10 +84,10 @@ public class ProductService(ProductRepository productRepository)
 
     public async Task<bool> Delete(int id, int accountId)
     {
-        var exists = await _productRepository.ExistsAsync(id, accountId);
+        var exists = await ProductRepository.Exists(id, accountId);
         if (!exists) return false;
 
-        await _productRepository.DeleteAsync(id, accountId);
+        await ProductRepository.Delete(id, accountId);
         return true;
     }
 }

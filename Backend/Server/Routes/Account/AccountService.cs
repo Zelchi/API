@@ -6,7 +6,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 {
     public async Task<IEnumerable<AccountEntity>> GetAll()
     {
-        var accounts = await AccountRepository.GetAllAsync();
+        var accounts = await AccountRepository.GetAll();
         return accounts.Select(a => new AccountEntity
         {
             Id = a.Id,
@@ -21,7 +21,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 
     public async Task<AccountEntity> GetById(int id)
     {
-        var account = await AccountRepository.GetByIdAsync(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
+        var account = await AccountRepository.GetById(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
         return new AccountEntity
         {
             Id = account.Id,
@@ -36,7 +36,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 
     public async Task<AccountEntity> Create(CreateAccountDto createAccountDto)
     {
-        var emailExists = await AccountRepository.EmailExistsAsync(createAccountDto.Email);
+        var emailExists = await AccountRepository.EmailExists(createAccountDto.Email);
         if (emailExists)
             throw new Exception("Email já está em uso");
 
@@ -48,7 +48,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
             Role = createAccountDto.Role
         };
 
-        var createdAccount = await AccountRepository.CreateAsync(account);
+        var createdAccount = await AccountRepository.Create(account);
 
         return new AccountEntity
         {
@@ -64,13 +64,13 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 
     public async Task<AccountEntity> Update(int id, UpdateAccountDto updateAccountDto)
     {
-        var account = await AccountRepository.GetByIdAsync(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
+        var account = await AccountRepository.GetById(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
         account.Username = updateAccountDto.Username ?? account.Username;
         if (!string.IsNullOrEmpty(updateAccountDto.Password))
             account.Password = BCrypt.Net.BCrypt.HashPassword(updateAccountDto.Password);
         account.Role = updateAccountDto.Role ?? account.Role;
 
-        var updatedAccount = await AccountRepository.UpdateAsync(account);
+        var updatedAccount = await AccountRepository.Update(account);
 
         return new AccountEntity
         {
@@ -86,7 +86,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 
     public async Task Delete(int id)
     {
-        var exists = await AccountRepository.ExistsAsync(id);
+        var exists = await AccountRepository.Exists(id);
         if (!exists)
             throw new Exception($"Conta com ID {id} não encontrada");
 
@@ -95,7 +95,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
 
     public async Task<LoginResponseDto> Login(LoginDto loginDto)
     {
-        var account = await AccountRepository.GetByEmailAsync(loginDto.Email) ?? throw new Exception("Email ou senha inválidos");
+        var account = await AccountRepository.GetByEmail(loginDto.Email) ?? throw new Exception("Email ou senha inválidos");
         if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, account.Password)) throw new Exception("Email ou senha inválidos");
 
         string token = TokenGenerator.GenerateJwtToken(account, Configuration);

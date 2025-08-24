@@ -47,12 +47,10 @@ public static class Service
         
         // Repositories
         services.AddScoped<Routes.Account.AccountRepository>();
-        services.AddScoped<Routes.Contact.ContactRepository>();
         services.AddScoped<Routes.Product.ProductRepository>();
         
         // Services
         services.AddScoped<Routes.Account.AccountService>();
-        services.AddScoped<Routes.Contact.ContactService>();
         services.AddScoped<Routes.Product.ProductService>();
 
         return services;

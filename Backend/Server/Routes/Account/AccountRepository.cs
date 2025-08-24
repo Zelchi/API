@@ -3,26 +3,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Server.Routes.Account;
 
-public class AccountRepository(Database context)
+public class AccountRepository(Database Context)
 {
-    private readonly Database _context = context;
-
     public async Task<IEnumerable<AccountEntity>> GetAllAsync()
     {
-        return await _context.Accounts
+        return await Context.Accounts
             .Where(a => a.DeletedAt == DateTime.MinValue)
             .ToListAsync();
     }
 
     public async Task<AccountEntity> GetByIdAsync(int id)
     {
-        return await _context.Accounts
+        return await Context.Accounts
             .FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue);
     }
 
     public async Task<AccountEntity> GetByEmailAsync(string email)
     {
-        return await _context.Accounts
+        return await Context.Accounts
             .FirstOrDefaultAsync(a => a.Email == email && a.DeletedAt == DateTime.MinValue);
     }
 
@@ -32,16 +30,16 @@ public class AccountRepository(Database context)
         account.UpdatedAt = DateTime.UtcNow;
         account.DeletedAt = DateTime.MinValue;
 
-        _context.Accounts.Add(account);
-        await _context.SaveChangesAsync();
+        Context.Accounts.Add(account);
+        await Context.SaveChangesAsync();
         return account;
     }
 
     public async Task<AccountEntity> UpdateAsync(AccountEntity account)
     {
         account.UpdatedAt = DateTime.UtcNow;
-        _context.Accounts.Update(account);
-        await _context.SaveChangesAsync();
+        Context.Accounts.Update(account);
+        await Context.SaveChangesAsync();
         return account;
     }
 
@@ -58,13 +56,13 @@ public class AccountRepository(Database context)
 
     public async Task<bool> ExistsAsync(int id)
     {
-        return await _context.Accounts
+        return await Context.Accounts
             .AnyAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue);
     }
 
     public async Task<bool> EmailExistsAsync(string email)
     {
-        return await _context.Accounts
+        return await Context.Accounts
             .AnyAsync(a => a.Email == email && a.DeletedAt == DateTime.MinValue);
     }
 }

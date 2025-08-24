@@ -3,20 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Server.Routes.Contact;
 
-public class ContactRepository(Database context)
+public class ContactRepository(Database Context)
 {
-    private readonly Database _context = context;
-
     public async Task<IEnumerable<ContactEntity>> GetAllByAccountIdAsync(int accountId)
     {
-        return await _context.Contacts
+        return await Context.Contacts
             .Where(c => c.AccountId == accountId && c.DeletedAt == DateTime.MinValue)
             .ToListAsync();
     }
 
     public async Task<ContactEntity> GetByIdAsync(int id, int accountId)
     {
-        return await _context.Contacts
+        return await Context.Contacts
             .FirstOrDefaultAsync(c => c.Id == id && c.AccountId == accountId && c.DeletedAt == DateTime.MinValue);
     }
 
@@ -26,16 +24,16 @@ public class ContactRepository(Database context)
         contact.UpdatedAt = DateTime.UtcNow;
         contact.DeletedAt = DateTime.MinValue;
 
-        _context.Contacts.Add(contact);
-        await _context.SaveChangesAsync();
+        Context.Contacts.Add(contact);
+        await Context.SaveChangesAsync();
         return contact;
     }
 
     public async Task<ContactEntity> UpdateAsync(ContactEntity contact)
     {
         contact.UpdatedAt = DateTime.UtcNow;
-        _context.Contacts.Update(contact);
-        await _context.SaveChangesAsync();
+        Context.Contacts.Update(contact);
+        await Context.SaveChangesAsync();
         return contact;
     }
 
@@ -52,7 +50,7 @@ public class ContactRepository(Database context)
 
     public async Task<bool> ExistsAsync(int id, int accountId)
     {
-        return await _context.Contacts
+        return await Context.Contacts
             .AnyAsync(c => c.Id == id && c.AccountId == accountId && c.DeletedAt == DateTime.MinValue);
     }
 }

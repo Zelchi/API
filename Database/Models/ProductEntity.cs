@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Backend.Server.Routes.Account;
 
-namespace Backend.Server.Routes.Product;
+namespace Database.Models;
 
 public class ProductEntity
 {

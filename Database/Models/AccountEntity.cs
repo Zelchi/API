@@ -1,9 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Backend.Server.Routes.Product;
 
-namespace Backend.Server.Routes.Account;
+namespace Database.Models;
 
 public class AccountEntity
 {

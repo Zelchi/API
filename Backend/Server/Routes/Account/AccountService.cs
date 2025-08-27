@@ -1,4 +1,5 @@
 using Backend.Server.Tools;
+using Database.Models;
 
 namespace Backend.Server.Routes.Account;
 
@@ -19,7 +20,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
         });
     }
 
-    public async Task<AccountEntity> GetById(int id)
+    public async Task<AccountEntity> GetById(Guid id)
     {
         var account = await AccountRepository.GetById(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
         return new AccountEntity
@@ -62,7 +63,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
         };
     }
 
-    public async Task<AccountEntity> Update(int id, UpdateAccountDto updateAccountDto)
+    public async Task<AccountEntity> Update(Guid id, UpdateAccountDto updateAccountDto)
     {
         var account = await AccountRepository.GetById(id) ?? throw new Exception($"Conta com ID {id} não encontrada");
         account.Username = updateAccountDto.Username ?? account.Username;
@@ -84,7 +85,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
         };
     }
 
-    public async Task Delete(int id)
+    public async Task Delete(Guid id)
     {
         var exists = await AccountRepository.Exists(id);
         if (!exists)
@@ -98,7 +99,7 @@ public class AccountService(AccountRepository AccountRepository, IConfiguration 
         var account = await AccountRepository.GetByEmail(loginDto.Email) ?? throw new Exception("Email ou senha inválidos");
         if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, account.Password)) throw new Exception("Email ou senha inválidos");
 
-        string token = TokenGenerator.GenerateJwtToken(account, Configuration);
+    string token = TokenGenerator.GenerateJwtToken(account, Configuration);
 
         return new LoginResponseDto
         {

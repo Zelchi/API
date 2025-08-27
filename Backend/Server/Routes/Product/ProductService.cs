@@ -1,8 +1,10 @@
+using Database.Models;
+
 namespace Backend.Server.Routes.Product;
 
 public class ProductService(ProductRepository ProductRepository)
 {
-    public async Task<IEnumerable<ProductEntity>> GetAll(int accountId)
+    public async Task<IEnumerable<ProductEntity>> GetAll(Guid accountId)
     {
         var products = await ProductRepository.GetAllByAccountId(accountId);
         return products.Select(p => new ProductEntity
@@ -18,7 +20,7 @@ public class ProductService(ProductRepository ProductRepository)
         });
     }
 
-    public async Task<ProductEntity> GetById(int id, int accountId)
+    public async Task<ProductEntity> GetById(Guid id, Guid accountId)
     {
         var product = await ProductRepository.GetById(id, accountId) ?? throw new Exception($"Produto com ID {id} não encontrado");
             
@@ -35,7 +37,7 @@ public class ProductService(ProductRepository ProductRepository)
         };
     }
 
-    public async Task<ProductEntity> Create(CreateProductDto createProductDto, int accountId)
+    public async Task<ProductEntity> Create(CreateProductDto createProductDto, Guid accountId)
     {
         ProductEntity product = new()
         {
@@ -60,7 +62,7 @@ public class ProductService(ProductRepository ProductRepository)
         };
     }
 
-    public async Task<ProductEntity> Update(int id, UpdateProductDto updateProductDto, int accountId)
+    public async Task<ProductEntity> Update(Guid id, UpdateProductDto updateProductDto, Guid accountId)
     {
         var product = await ProductRepository.GetById(id, accountId) ?? throw new Exception($"Produto com ID {id} não encontrado");
         if (!string.IsNullOrEmpty(updateProductDto.Name)) product.Name = updateProductDto.Name;
@@ -82,7 +84,7 @@ public class ProductService(ProductRepository ProductRepository)
         };
     }
 
-    public async Task<bool> Delete(int id, int accountId)
+    public async Task<bool> Delete(Guid id, Guid accountId)
     {
         var exists = await ProductRepository.Exists(id, accountId);
         if (!exists) return false;

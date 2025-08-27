@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using Backend.Server.Config;
+using Database;
+using Database.Models;
 
 namespace Backend.Server.Routes.Account;
 
-public class AccountRepository(Database Context)
+public class AccountRepository(Context Context)
 {
     public async Task<IEnumerable<AccountEntity>> GetAll()
     {
         return await Context.Accounts.Where(a => a.DeletedAt == DateTime.MinValue).ToListAsync();
     }
 
-    public async Task<AccountEntity> GetById(int id)
+    public async Task<AccountEntity> GetById(Guid id)
     {
         return await Context.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue);
     }
@@ -39,7 +40,7 @@ public class AccountRepository(Database Context)
         return account;
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var account = await GetById(id);
         if (account is not null)
@@ -50,7 +51,7 @@ public class AccountRepository(Database Context)
         }
     }
 
-    public async Task<bool> Exists(int id)
+    public async Task<bool> Exists(Guid id)
     {
         return await Context.Accounts.AnyAsync(a => a.Id == id && a.DeletedAt == DateTime.MinValue);
     }

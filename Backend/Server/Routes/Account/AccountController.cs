@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Database.Models;
 
 namespace Backend.Server.Routes.Account;
 
@@ -43,7 +44,7 @@ public class AccountController(AccountService AccountService) : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<IActionResult> GetAccountById(int id)
+    public async Task<IActionResult> GetAccountById(Guid id)
     {
         try
         {
@@ -77,7 +78,7 @@ public class AccountController(AccountService AccountService) : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountDto updateAccountDto)
+    public async Task<IActionResult> UpdateAccount(Guid id, [FromBody] UpdateAccountDto updateAccountDto)
     {
         if (!ModelState.IsValid)
         {
@@ -97,7 +98,7 @@ public class AccountController(AccountService AccountService) : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize]
-    public async Task<IActionResult> DeleteAccount(int id)
+    public async Task<IActionResult> DeleteAccount(Guid id)
     {
         try
         {

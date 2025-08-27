@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using Backend.Server.Config;
+using Database;
+using Database.Models;
 
 namespace Backend.Server.Routes.Product;
 
-public class ProductRepository(Database Context)
+public class ProductRepository(Context Context)
 {
-    public async Task<IEnumerable<ProductEntity>> GetAllByAccountId(int accountId)
+    public async Task<IEnumerable<ProductEntity>> GetAllByAccountId(Guid accountId)
     {
         return await Context.Products.Where(p => p.AccountId == accountId && p.DeletedAt == DateTime.MinValue).ToListAsync();
     }
 
-    public async Task<ProductEntity> GetById(int id, int accountId)
+    public async Task<ProductEntity> GetById(Guid id, Guid accountId)
     {
         return await Context.Products.FirstOrDefaultAsync(p => p.Id == id && p.AccountId == accountId && p.DeletedAt == DateTime.MinValue);
     }
@@ -34,7 +35,7 @@ public class ProductRepository(Database Context)
         return product;
     }
 
-    public async Task Delete(int id, int accountId)
+    public async Task Delete(Guid id, Guid accountId)
     {
         var product = await GetById(id, accountId);
         if (product is not null)
@@ -45,7 +46,7 @@ public class ProductRepository(Database Context)
         }
     }
 
-    public async Task<bool> Exists(int id, int accountId)
+    public async Task<bool> Exists(Guid id, Guid accountId)
     {
         return await Context.Products.AnyAsync(p => p.Id == id && p.AccountId == accountId && p.DeletedAt == DateTime.MinValue);
     }

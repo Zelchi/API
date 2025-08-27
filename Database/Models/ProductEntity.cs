@@ -6,8 +6,7 @@ namespace Database.Models;
 public class ProductEntity
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     [StringLength(100)]
@@ -20,7 +19,7 @@ public class ProductEntity
     public string Description { get; set; } = string.Empty;
 
     [ForeignKey(nameof(Account))]
-    public int AccountId { get; set; }
+    public Guid AccountId { get; set; }
 
     public AccountEntity Account { get; set; }
 

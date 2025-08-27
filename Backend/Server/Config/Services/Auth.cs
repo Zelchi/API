@@ -15,7 +15,11 @@ public static class Auth
         var tokenValidationParameters = new TokenValidationParameters()
         {
             ValidateLifetime = true,
-            IssuerSigningKey = signingKey
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = signingKey,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
         };
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o => { o.TokenValidationParameters = tokenValidationParameters; });

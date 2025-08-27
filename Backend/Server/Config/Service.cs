@@ -9,8 +9,7 @@ public static class Service
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        var serviceProvider = services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         services.AddControllers();
         services.AddEndpointsApiExplorer();
@@ -21,9 +20,7 @@ public static class Service
 
         services.AddDbContext<Context>(options =>
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? throw new Exception("Connection string 'DefaultConnection' not found.");
-            options.UseMySQL(connectionString);
+            options.UseMySQL(configuration.GetConnectionString("DefaultConnection"));
         });
 
         // Repositories

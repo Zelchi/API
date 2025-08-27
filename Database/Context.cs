@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Database;
 
-public class Database(DbContextOptions<Database> options, IConfiguration configuration) : DbContext(options)
+public class Context(DbContextOptions<Context> options, IConfiguration configuration) : DbContext(options)
 {
     public DbSet<AccountEntity> Accounts { get; set; }
     public DbSet<ProductEntity> Products { get; set; }

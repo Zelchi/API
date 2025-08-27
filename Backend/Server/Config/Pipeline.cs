@@ -1,24 +1,22 @@
+using Backend.Server.Config.Pipelines;
+
 namespace Backend.Server.Config;
 
 public static class Pipeline
 {
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
-
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.ConfigureSwagger(); // Desenvolvimento
         }
-
-        if (!app.Environment.IsDevelopment())
+        else
         {
-            app.UseHttpsRedirection();
+            app.ConfigureHttp(); // Produção
+            app.ConfigureCors(); // Produção
         }
 
-        app.UseAuthentication();
-        app.UseAuthorization();
-
+        app.ConfigureAuth();
         app.MapControllers();
 
         return app;

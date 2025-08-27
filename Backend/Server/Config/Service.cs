@@ -1,4 +1,5 @@
-using Microsoft.OpenApi.Models;
+using Backend.Server.Config.Services;
+using Database;
 
 namespace Backend.Server.Config;
 
@@ -6,44 +7,16 @@ public static class Service
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddControllers();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Backend API", Version = "v1" });
-            
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
-
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    new string[] {}
-                }
-            });
-        });
-
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        
-        services.ConfigureAuth(configuration);
-        services.AddAuthorization();
 
-        services.AddDbContext<Database>();
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        
+        services.ConfigureSwagger(configuration);
+        services.ConfigureAuth(configuration);
+        
+        services.AddDbContext<Context>();
         
         // Repositories
         services.AddScoped<Routes.Account.AccountRepository>();

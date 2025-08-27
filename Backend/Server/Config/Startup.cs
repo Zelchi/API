@@ -9,7 +9,7 @@ public static class Startup
         builder.Services.AddServices();
 
         var app = builder.Build();
-        
+
         return app.ConfigurePipeline();
     }
 }

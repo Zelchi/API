@@ -7,8 +7,7 @@ namespace Database.Models;
 public class AccountEntity
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     [StringLength(100)]

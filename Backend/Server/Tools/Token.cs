@@ -1,36 +1,32 @@
-using Backend.Server.Routes.Account;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Database.Models;
 
 namespace Backend.Server.Tools;
 
-public static class TokenGenerator
+public static class TokenAccount
 {
     public static string GenerateJwtToken(AccountEntity account, IConfiguration config)
     {
-        var key = config["JWT:Key"] ?? "DefaultSecretKeyThatIsAtLeast32CharactersLong";
-        if (key.Length < 32) throw new InvalidOperationException("A chave JWT deve ter pelo menos 32 caracteres");
-
-        var expiration = DateTime.UtcNow.AddHours(config.GetValue<int?>("JWT:ExpirationHours") ?? 8);
+        var key = config["JWT:Key"] ?? throw new Exception("JWT Key not configured");
+        var hours = Convert.ToInt32(config["JWT:ExpireHours"] ?? throw new Exception("JWT Hours is not configured"));
+        var expires = DateTime.UtcNow.AddHours(hours);
 
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
-            new Claim(ClaimTypes.Email, account.Email ?? ""),
-            new Claim(ClaimTypes.Name, account.Username ?? ""),
-            new Claim(ClaimTypes.Role, account.Role ?? "")
+            new Claim(ClaimTypes.Email, account.Email.ToString()),
+            new Claim(ClaimTypes.Name, account.Username.ToString()),
+            new Claim(ClaimTypes.Role, account.Role.ToString())
         };
 
-        var credentials = new SigningCredentials(
+        var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
             SecurityAlgorithms.HmacSha256Signature);
 
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: expiration,
-            signingCredentials: credentials);
+        var token = new JwtSecurityToken(claims: claims, expires: expires, signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
